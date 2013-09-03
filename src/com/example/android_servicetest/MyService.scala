@@ -7,6 +7,7 @@ import android.os.Binder
 
 class MyService extends Service {
   val myBinder = new MyBinder
+  var loop: Boolean = true
 
   class MyBinder extends Binder {
     var count = 0
@@ -23,8 +24,8 @@ class MyService extends Service {
     println("MyService is onCreate invoke!")
     new Thread() {
       override def run: Unit = {
-        while (true) {
-          Thread.sleep(500)
+        while (loop) {
+          Thread.sleep(1000)
           myBinder.count += 1
           println("count=" + myBinder.count)
         }
@@ -39,6 +40,7 @@ class MyService extends Service {
   }
   override def onDestroy(): Unit = {
     println("MyService is onDestroy invoke!")
+    loop = false
     super.onDestroy()
   }
   override def onUnbind(intent: Intent) = {
