@@ -9,7 +9,7 @@ import android.os.Bundle
 import android.os.IBinder
 import android.widget.Button
 import android.content.Context
-
+import android.widget.Toast
 class MainActivity extends Activity with RichActivity {
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
@@ -29,12 +29,14 @@ class MainActivity extends Activity with RichActivity {
     stopBtn.onClick({
       stopService(intent)
     })
+    var _service: IBinder = null
 
-    val conn = new ServiceConnection() {
+    var conn = new ServiceConnection() {
       override def onServiceDisconnected(name: ComponentName): Unit = {
         println("ServiceConnection is onServiceDisconnected invoke!")
       }
       override def onServiceConnected(name: ComponentName, service: IBinder): Unit = {
+        _service = service
         println("ServiceConnection is onServiceConnected is invoke!")
       }
     }
@@ -45,5 +47,14 @@ class MainActivity extends Activity with RichActivity {
     unbindBtn.onClick({
       unbindService(conn)
     })
+
+    getdataBtn onClick {
+      if (_service != null) {
+        val myBinder = _service.asInstanceOf[MyBinder]
+        Toast.makeText(this, "获取当前的count值为" + myBinder.count, Toast.LENGTH_SHORT).show
+      } else {
+        Toast.makeText(this, "还没有绑定", Toast.LENGTH_SHORT).show
+      }
+    }
   }
 }
